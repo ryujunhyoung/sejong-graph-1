@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연설문 키워드 인터랙티브 버블 매트릭스 대시보드</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-16">
+
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-indigo-600/20 border border-indigo-500/30 rounded-xl text-indigo-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 30a12 12 0 100-24 12 12 0 000 24zM21 21l-4.35-4.35" />
+                        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-300">
+                        연설문 키워드 버블 매트릭스 (Bubble Matrix)
+                    </h1>
+                    <p class="text-xs text-slate-400">주제 범주(X축) × 빈도수(Y축) × 키워드 중요도(버블 크기)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span class="text-xs px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                    총 <strong class="text-indigo-400">34개</strong> 키워드 (87회 언급)
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+
+        <!-- KPI Insight Summary -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-cyan-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">1. 방역 / 보건 범주</p>
+                    <p class="text-xl font-extrabold text-cyan-300 mt-1">총 13개 항목 <span class="text-xs text-slate-400 font-normal">(38회)</span></p>
+                </div>
+                <span class="text-2xl">🛡️</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-amber-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">2. 국민 / 민생 범주</p>
+                    <p class="text-xl font-extrabold text-amber-300 mt-1">총 6개 항목 <span class="text-xs text-slate-400 font-normal">(15회)</span></p>
+                </div>
+                <span class="text-2xl">👥</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-purple-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">3. 국정 / 소프트파워</p>
+                    <p class="text-xl font-extrabold text-purple-300 mt-1">총 5개 항목 <span class="text-xs text-slate-400 font-normal">(10회)</span></p>
+                </div>
+                <span class="text-2xl">🌐</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-500 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">4. 정치 / 개혁 범주</p>
+                    <p class="text-xl font-extrabold text-emerald-300 mt-1">총 10개 항목 <span class="text-xs text-slate-400 font-normal">(24회)</span></p>
+                </div>
+                <span class="text-2xl">⚖️</span>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="glass-panel glass-card p-5 rounded-2xl space-y-4">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                
+                <!-- Category Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-400 mr-1 uppercase tracking-wider">범주 선택:</span>
+                    <button onclick="setCategoryFilter('all')" id="catBtn-all" class="cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all bg-indigo-600 text-white shadow-lg">
+                        전체 보기 (34)
+                    </button>
+                    <button onclick="setCategoryFilter('1. 방역/보건')" id="catBtn-1" class="cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-cyan-300 bg-cyan-950/60 border border-cyan-800/60 hover:bg-cyan-900/40">
+                        🛡️ 1. 방역/보건
+                    </button>
+                    <button onclick="setCategoryFilter('2. 국민/민생')" id="catBtn-2" class="cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-amber-300 bg-amber-950/60 border border-amber-800/60 hover:bg-amber-900/40">
+                        👥 2. 국민/민생
+                    </button>
+                    <button onclick="setCategoryFilter('3. 국정/소프트파워')" id="catBtn-3" class="cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-purple-300 bg-purple-950/60 border border-purple-800/60 hover:bg-purple-900/40">
+                        🌐 3. 국정/소프트파워
+                    </button>
+                    <button onclick="setCategoryFilter('4. 정치/개혁')" id="catBtn-4" class="cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-emerald-300 bg-emerald-950/60 border border-emerald-800/60 hover:bg-emerald-900/40">
+                        ⚖️ 4. 정치/개혁
+                    </button>
+                </div>
+
+                <!-- Right Tools: Minimum Freq Slider + Search -->
+                <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                    <!-- Slider -->
+                    <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
+                        <span class="text-slate-400">최소 빈도:</span>
+                        <input type="range" id="freqSlider" min="1" max="10" value="1" oninput="handleFilterChange()" class="w-24 accent-indigo-500 cursor-pointer">
+                        <span id="freqVal" class="font-bold text-indigo-400 w-8">1회 이상</span>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="relative flex-1 sm:w-56">
+                        <input type="text" id="searchInput" oninput="handleFilterChange()" placeholder="키워드 검색..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-1.5 pl-9 text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Main Content Area: Chart + Side Detail Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Bubble Matrix Canvas Panel (2 Columns on LG) -->
+            <div class="lg:col-span-2 glass-card p-5 rounded-2xl flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                        버블 매트릭스 시각화 (Interactive Bubble Chart)
+                    </h2>
+                    <span class="text-xs text-slate-400">💡 버블을 클릭하면 상세 카드가 표시됩니다.</span>
+                </div>
+
+                <!-- Chart Wrapper -->
+                <div class="relative w-full h-[480px] bg-slate-950/40 rounded-xl p-2 border border-slate-800/60">
+                    <canvas id="bubbleCanvas"></canvas>
+                </div>
+
+                <!-- Legend Indicator -->
+                <div class="flex flex-wrap items-center justify-between mt-4 text-xs text-slate-400 border-t border-slate-800/80 pt-3">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block"></span> 방역/보건</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> 국민/민생</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> 국정/소프트파워</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> 정치/개혁</span>
+                    </div>
+                    <span>원 반지름 (Radius) = 출현 빈도수 비례</span>
+                </div>
+            </div>
+
+            <!-- Side Card: Selected Keyword Detail -->
+            <div class="glass-card p-6 rounded-2xl flex flex-col justify-between" id="detailPanel">
+                <div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                        <span class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">키워드 심층 분석</span>
+                        <span id="detailBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">선택 대기</span>
+                    </div>
+
+                    <div id="detailContent" class="mt-6 space-y-5">
+                        <div class="text-center py-10 text-slate-500">
+                            <span class="text-4xl block mb-3">📍</span>
+                            <p class="text-sm">버블을 클릭하거나 목록에서 키워드를 선택하면 세부 정보가 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Quick Stat inside Detail -->
+                <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 text-center">
+                    연설문 총 87개 표출 키워드 기반 자동 산출
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Data Table View -->
+        <div class="glass-card p-6 rounded-2xl">
+            <div class="flex flex-wrap justify-between items-center pb-4 mb-4 border-b border-slate-800 gap-2">
+                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    필터링된 데이터 상세 테이블
+                </h3>
+                <span id="tableCount" class="text-xs text-indigo-300 bg-indigo-950/80 border border-indigo-800 px-3 py-1 rounded-full">
+                    34개 키워드 표시 중
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm text-slate-300">
+                    <thead class="text-xs text-slate-400 uppercase bg-slate-900/80 border-b border-slate-800">
+                        <tr>
+                            <th class="px-4 py-3">주제 범주</th>
+                            <th class="px-4 py-3">키워드</th>
+                            <th class="px-4 py-3">출현 빈도</th>
+                            <th class="px-4 py-3">전체 대비 점유율</th>
+                            <th class="px-4 py-3">범주 내 점유율</th>
+                            <th class="px-4 py-3 text-right">상세보기</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-800/60">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Data Structure with Categories and exact frequencies
+        const keywordsDataset = [
+            // 1. 방역/보건
+            { keyword: "방역", count: 13, category: "1. 방역/보건", catIndex: 1, desc: "연설 전체를 관통하는 최상위 국정 현안 키워드" },
+            { keyword: "코로나19", count: 9, category: "1. 방역/보건", catIndex: 1, desc: "위기 대응의 직접적 대상이자 배경 상황" },
+            { keyword: "거리두기", count: 3, category: "1. 방역/보건", catIndex: 1, desc: "2.5단계 격상 등 방역 수단 및 지침" },
+            { keyword: "감염", count: 3, category: "1. 방역/보건", catIndex: 1, desc: "전파 및 확진 차단을 위한 경각심 키워드" },
+            { keyword: "전파", count: 2, category: "1. 방역/보건", catIndex: 1, desc: "일상 공간 내 확산 방지 필요성 강조" },
+            { keyword: "확진자", count: 2, category: "1. 방역/보건", catIndex: 1, desc: "감염 경로 미파악 환자 관리의 긴급성" },
+            { keyword: "병상", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "의료체계 부담 완화 조치" },
+            { keyword: "의료인력", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "의료체계 지원 및 현장 인력" },
+            { keyword: "백신", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "근본적 차단을 위한 해결책" },
+            { keyword: "치료제", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "백신과 함께 제시된 방역 총력전 요소" },
+            { keyword: "방역수칙", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "국민 자발적 준수 당부사항" },
+            { keyword: "마스크", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "일상 방역 기본 실천 지침" },
+            { keyword: "K-방역", count: 1, category: "1. 방역/보건", catIndex: 1, desc: "국제적 위상 및 모범 사례 평가" },
+
+            // 2. 국민/민생
+            { keyword: "국민", count: 9, category: "2. 국민/민생", catIndex: 2, desc: "모든 국정 및 개혁, 방역 협조의 중심 대상" },
+            { keyword: "민생", count: 2, category: "2. 국민/민생", catIndex: 2, desc: "방역 격상으로 인한 경제적/삶의 타격 우려" },
+            { keyword: "국민안전", count: 1, category: "2. 국민/민생", catIndex: 2, desc: "정부 최우선 국정 책임 목표" },
+            { keyword: "성탄절", count: 1, category: "2. 국민/민생", catIndex: 2, desc: "연말 이동 및 접촉 자제 당부 시기" },
+            { keyword: "연말연시", count: 1, category: "2. 국민/민생", catIndex: 2, desc: "방역 고비로서의 핵심 시점" },
+            { keyword: "명절", count: 1, category: "2. 국민/민생", catIndex: 2, desc: "몸은 멀리 마음은 함께한 추석 사례 언급" },
+
+            // 3. 국정/소프트파워
+            { keyword: "정부", count: 5, category: "3. 국정/소프트파워", catIndex: 3, desc: "방역 총력전 및 개혁 완수 주체" },
+            { keyword: "대유행", count: 2, category: "3. 국정/소프트파워", catIndex: 3, desc: "전국적 확산 위기 대처 요구" },
+            { keyword: "국제사회", count: 1, category: "3. 국정/소프트파워", catIndex: 3, desc: "대한민국 위상에 대한 대외적 평가 주체" },
+            { keyword: "소프트파워", count: 1, category: "3. 국정/소프트파워", catIndex: 3, desc: "문화·외교·방역 등 강국 발전 역량" },
+            { keyword: "수도권", count: 1, category: "3. 국정/소프트파워", catIndex: 3, desc: "거리두기 2.5단계 격상 대상 지역" },
+
+            // 4. 정치/개혁
+            { keyword: "권력기관", count: 6, category: "4. 정치/개혁", catIndex: 4, desc: "후반부 핵심 주제, 제도적 개혁 대상" },
+            { keyword: "민주주의", count: 5, category: "4. 정치/개혁", catIndex: 4, desc: "개혁의 지향점이자 헌법 가치" },
+            { keyword: "개혁", count: 5, category: "4. 정치/개혁", catIndex: 4, desc: "권력기관 권한 분산 및 입법 완성" },
+            { keyword: "촛불혁명", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "민주주의 성장 과정의 역사적 언급" },
+            { keyword: "헌법정신", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "모든 권력은 국민으로부터 나온다는 원칙" },
+            { keyword: "정기국회", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "개혁 입법 완수의 기회" },
+            { keyword: "국정원", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "권한 분산 대상 권력기관" },
+            { keyword: "검찰", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "견제와 균형 구축 대상 권력기관" },
+            { keyword: "경찰", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "국민의 기관으로 거듭날 개혁 대상" },
+            { keyword: "고위공직자범죄수사처", count: 1, category: "4. 정치/개혁", catIndex: 4, desc: "출범 예정 개혁 성과 기관 (공수처)" }
+        ];
+
+        // Global State variables
+        let selectedCategory = 'all';
+        let minFrequency = 1;
+        let searchQuery = '';
+        let chartInstance = null;
+        let activeKeyword = null;
+
+        const TOTAL_COUNT_SUM = keywordsDataset.reduce((sum, item) => sum + item.count, 0);
+
+        // Category Color Configs
+        const categoryColors = {
+            "1. 방역/보건": { bg: "rgba(34, 211, 238, 0.65)", border: "#22d3ee", text: "text-cyan-300" },
+            "2. 국민/민생": { bg: "rgba(251, 191, 36, 0.65)", border: "#fbbf24", text: "text-amber-300" },
+            "3. 국정/소프트파워": { bg: "rgba(192, 132, 252, 0.65)", border: "#c084fc", text: "text-purple-300" },
+            "4. 정치/개혁": { bg: "rgba(52, 211, 153, 0.65)", border: "#34d399", text: "text-emerald-300" }
+        };
+
+        // Deterministic Jittering for collision avoidance
+        function getJitteredX(item, index) {
+            // Seeded offset based on index and character length
+            const offset = ((index % 5) - 2) * 0.08 + (item.keyword.length * 0.015);
+            return item.catIndex + offset;
+        }
+
+        // Get Filtered Data
+        function getFilteredData() {
+            return keywordsDataset.filter(item => {
+                const matchCat = (selectedCategory === 'all' || item.category === selectedCategory);
+                const matchFreq = item.count >= minFrequency;
+                const matchSearch = item.keyword.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCat && matchFreq && matchSearch;
+            });
+        }
+
+        // Initialize / Update Chart
+        function updateChart() {
+            const ctx = document.getElementById('bubbleCanvas').getContext('2d');
+            const filtered = getFilteredData();
+
+            const bubblePoints = filtered.map((item, idx) => {
+                const colorObj = categoryColors[item.category];
+                const isSelected = activeKeyword && activeKeyword.keyword === item.keyword;
+
+                return {
+                    x: getJitteredX(item, idx),
+                    y: item.count,
+                    r: Math.max(item.count * 4.2 + 5, 8), // Dynamic radius based on frequency
+                    rawItem: item,
+                    backgroundColor: isSelected ? '#ffffff' : colorObj.bg,
+                    borderColor: isSelected ? '#6366f1' : colorObj.border,
+                    borderWidth: isSelected ? 3 : 1.5
+                };
+            });
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: '키워드 빈도',
+                        data: bubblePoints,
+                        hoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const clickedItem = bubblePoints[index].rawItem;
+                            selectKeyword(clickedItem);
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                title: (items) => {
+                                    if (!items.length) return '';
+                                    const raw = items[0].raw.rawItem;
+                                    return `${raw.keyword} (${raw.count}회 언급)`;
+                                },
+                                label: (context) => {
+                                    const raw = context.raw.rawItem;
+                                    const pct = ((raw.count / TOTAL_COUNT_SUM) * 100).toFixed(1);
+                                    return [
+                                        `범주: ${raw.category}`,
+                                        `전체 대비 점유율: ${pct}%`,
+                                        `설명: ${raw.desc}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: 0.4,
+                            max: 4.6,
+                            ticks: {
+                                stepSize: 1,
+                                callback: (val) => {
+                                    const labels = {
+                                        1: '1. 방역/보건',
+                                        2: '2. 국민/민생',
+                                        3: '3. 국정/소프트파워',
+                                        4: '4. 정치/개혁'
+                                    };
+                                    return labels[val] || '';
+                                },
+                                color: '#94a3b8',
+                                font: { family: 'Pretendard', size: 12, weight: '600' }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            title: { display: true, text: '주제 범주 (X축)', color: '#64748b', font: { size: 11 } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 14,
+                            ticks: {
+                                stepSize: 2,
+                                color: '#94a3b8',
+                                font: { family: 'Pretendard', size: 11 }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            title: { display: true, text: '출현 빈도수 (회, Y축)', color: '#64748b', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render Side Detail Panel
+        function selectKeyword(item) {
+            activeKeyword = item;
+            updateChart(); // Refresh to highlight active bubble
+
+            const panelContent = document.getElementById('detailContent');
+            const panelBadge = document.getElementById('detailBadge');
+            const colorClass = categoryColors[item.category].text;
+
+            const categoryTotal = keywordsDataset
+                .filter(k => k.category === item.category)
+                .reduce((sum, k) => sum + k.count, 0);
+
+            const overallPct = ((item.count / TOTAL_COUNT_SUM) * 100).toFixed(1);
+            const catPct = ((item.count / categoryTotal) * 100).toFixed(1);
+
+            panelBadge.innerText = item.category;
+            panelBadge.className = `text-xs px-2.5 py-0.5 rounded-full border bg-slate-900 ${colorClass}`;
+
+            panelContent.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <span class="text-xs text-slate-400">선택 키워드</span>
+                        <h3 class="text-3xl font-extrabold text-white mt-1 flex items-center justify-between">
+                            ${item.keyword}
+                            <span class="text-xl text-indigo-400 font-mono">${item.count}회</span>
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+                            <span class="text-xs text-slate-400 block">전체 대비 비중</span>
+                            <span class="text-lg font-bold text-slate-100 font-mono mt-0.5 block">${overallPct}%</span>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+                            <span class="text-xs text-slate-400 block">범주 내 비중</span>
+                            <span class="text-lg font-bold text-slate-100 font-mono mt-0.5 block">${catPct}%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800/80 p-4 rounded-xl space-y-2">
+                        <span class="text-xs font-semibold text-indigo-300">연설문 맥락 및 핵심 의미</span>
+                        <p class="text-xs text-slate-300 leading-relaxed">${item.desc}</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>상대적 빈도 강도</span>
+                            <span>${item.count} / 13</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-500" style="width: ${(item.count / 13) * 100}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Table Data
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const filtered = getFilteredData();
+            tbody.innerHTML = '';
+
+            filtered.forEach(item => {
+                const categoryTotal = keywordsDataset
+                    .filter(k => k.category === item.category)
+                    .reduce((sum, k) => sum + k.count, 0);
+
+                const overallPct = ((item.count / TOTAL_COUNT_SUM) * 100).toFixed(1);
+                const catPct = ((item.count / categoryTotal) * 100).toFixed(1);
+                const isSelected = activeKeyword && activeKeyword.keyword === item.keyword;
+
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-slate-800/40 transition-colors ${isSelected ? 'bg-indigo-950/40 border-l-2 border-l-indigo-500' : ''}`;
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-xs text-slate-400">${item.category}</td>
+                    <td class="px-4 py-3 font-semibold text-white">${item.keyword}</td>
+                    <td class="px-4 py-3 font-mono font-bold text-indigo-400">${item.count}회</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-300">${overallPct}%</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-300">${catPct}%</td>
+                    <td class="px-4 py-3 text-right">
+                        <button onclick="selectKeywordByName('${item.keyword}')" class="px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-all">
+                            선택
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('tableCount').innerText = `필터 결과: ${filtered.length}개 키워드`;
+        }
+
+        // Helper to select from table
+        function selectKeywordByName(name) {
+            const target = keywordsDataset.find(k => k.keyword === name);
+            if (target) selectKeyword(target);
+        }
+
+        // Filter Action Handler
+        function setCategoryFilter(cat) {
+            selectedCategory = cat;
+            
+            // Update UI Button Styles
+            const btnMap = {
+                'all': 'catBtn-all',
+                '1. 방역/보건': 'catBtn-1',
+                '2. 국민/민생': 'catBtn-2',
+                '3. 국정/소프트파워': 'catBtn-3',
+                '4. 정치/개혁': 'catBtn-4'
+            };
+
+            Object.keys(btnMap).forEach(key => {
+                const btn = document.getElementById(btnMap[key]);
+                if (key === cat) {
+                    btn.className = "cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all bg-indigo-600 text-white shadow-lg";
+                } else {
+                    btn.className = "cat-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-slate-400 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:text-white";
+                }
+            });
+
+            handleFilterChange();
+        }
+
+        function handleFilterChange() {
+            minFrequency = parseInt(document.getElementById('freqSlider').value, 10);
+            document.getElementById('freqVal').innerText = `${minFrequency}회 이상`;
+            searchQuery = document.getElementById('searchInput').value;
+
+            updateChart();
+            renderTable();
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            updateChart();
+            renderTable();
+            // Default select top keyword
+            selectKeyword(keywordsDataset[0]);
+        };
+    </script>
+</body>
+</html>
+```
+
+우측 상단의 **`Preview`** 버튼을 클릭하여 새로 구축된 버블 매트릭스 애플리케이션을 확인하실 수 있습니다.
